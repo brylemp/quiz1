@@ -9,7 +9,9 @@ let timerID
 let debounceID
 let time
 
-const container = document.getElementById('container')
+let container = document.getElementById('container')
+let quizStyle
+let choices
 
 loadGame()
 
@@ -34,7 +36,6 @@ function loadGame(){
 }
 
 function clickChoice(choice){
-    const choices = document.getElementById("choicesDiv")
     return (e) =>{
         if(e.target.innerHTML === questions[currentQuestion].correct_answer){
             choice.classList.add('correct')
@@ -56,32 +57,9 @@ function clickChoice(choice){
 }
 
 function initListeners(){
-    const choices = document.getElementById("choicesDiv")
     for(let choice of choices.children){
         choice.addEventListener('click',clickChoice(choice))
     }
-}
-
-function disableButtons(disable){
-    const choices = document.getElementById("choicesDiv")
-    for(let choice of choices.children){
-        choice.disabled = disable
-    }
-}
-
-function nextQuestion(){
-    clearInterval(timerID)
-    const quizStyle = document.getElementById('quiz').style
-    disableButtons(true)
-    setTimeout(()=>{
-        quizStyle.setProperty('--transitionTime','0ms')
-        quizStyle.setProperty('--progress', 0)
-        progress = 0
-        disableButtons(false)
-        startTimer()
-        currentQuestion++
-        showQuestion()
-    },1000)
 }
 
 function shuffleArray(array){
@@ -95,8 +73,27 @@ function shuffleArray(array){
     return newArray
 }
 
+function disableButtons(disable){
+    for(let choice of choices.children){
+        choice.disabled = disable
+    }
+}
+
+function nextQuestion(){
+    clearInterval(timerID)
+    disableButtons(true)
+    setTimeout(()=>{
+        quizStyle.setProperty('--transitionTime','0ms')
+        quizStyle.setProperty('--progress', 0)
+        progress = 0
+        disableButtons(false)
+        startTimer()
+        currentQuestion++
+        showQuestion()
+    },1000)
+}
+
 function showQuestion(){
-    const choices = document.getElementById("choicesDiv")
     const questionH1 = document.getElementById("question") 
 
     for(let choice of choices.children){
@@ -148,7 +145,10 @@ function startGame(){
             </div>
         </div>
     `
-    
+
+    quizStyle = document.getElementById('quiz').style
+    choices = document.getElementById("choicesDiv")
+
     initListeners()
     startTimer()
     showQuestion()
@@ -156,7 +156,6 @@ function startGame(){
 
 function startTimer(){
     time = questionTime
-    const quizStyle = document.getElementById('quiz').style
     timerID = setInterval(()=>{
         if(time!==0){
             progress = progress + constantStep
