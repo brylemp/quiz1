@@ -6,11 +6,16 @@ div#container{
 }
 
 div#quiz{
+    position: relative;
     border: solid 1px black;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
     width: 50%;
+}
+
+div#quiz::before{
+
 }
 
 div#questionDiv{

@@ -8,8 +8,6 @@ let time
 let correctChoice
 
 const container = document.getElementById('container')
-const choices = document.getElementById("choices")
-const questionH1 = document.getElementById("question") 
 
 loadGame()
 
@@ -34,6 +32,7 @@ function loadGame(){
 }
 
 function initListeners(){
+    const choices = document.getElementById("choices")
     for(let choice of choices.children){
         if(choice.innerHTML === questions[currentQuestion].correct_answer){
             correctChoice = choice
@@ -81,6 +80,9 @@ function shuffleArray(array){
 }
 
 function showQuestion(){
+    const choices = document.getElementById("choices")
+    const questionH1 = document.getElementById("question") 
+    
     for(let choice of choices.children){
         choice.classList.remove('correct')
         choice.classList.remove('wrong')
