@@ -1,11 +1,12 @@
 const maxQuestions = 10
-const questionTime = 10
+const questionTime = 5
+const constantStep = 1/questionTime
 
+let progress = 0
 let questions
 let currentQuestion = 0
 let timerID
 let time
-let correctChoice
 
 const container = document.getElementById('container')
 
@@ -34,9 +35,6 @@ function loadGame(){
 function initListeners(){
     const choices = document.getElementById("choices")
     for(let choice of choices.children){
-        if(choice.innerHTML === questions[currentQuestion].correct_answer){
-            correctChoice = choice
-        }
         choice.addEventListener('click', (e) =>{
             if(e.target.innerHTML === questions[currentQuestion].correct_answer){
                 choice.classList.add('correct')
@@ -61,7 +59,10 @@ function initListeners(){
 
 function nextQuestion(){
     clearInterval(timerID)
+    const quizStyle = document.getElementById('quiz').style
     setTimeout(()=>{
+        quizStyle.setProperty('--progress', 0)
+        progress = 0
         startTimer()
         currentQuestion++
         showQuestion()
@@ -82,7 +83,7 @@ function shuffleArray(array){
 function showQuestion(){
     const choices = document.getElementById("choices")
     const questionH1 = document.getElementById("question") 
-    
+
     for(let choice of choices.children){
         choice.classList.remove('correct')
         choice.classList.remove('wrong')
@@ -142,12 +143,21 @@ function startGame(){
 
 function startTimer(){
     time = questionTime
+    const quizStyle = document.getElementById('quiz').style
     timerID = setInterval(()=>{
         if(time!==0){
+            progress = progress + constantStep
+            quizStyle.setProperty('--progress', progress )
             time--
         }
         else{
             if(currentQuestion !== maxQuestions){
+                const choices = document.getElementById("choices")
+                for(let schoice of choices.children){
+                    if(schoice.innerHTML === questions[currentQuestion].correct_answer){
+                        schoice.classList.add('correct')
+                    }
+                }
                 nextQuestion()
             }
         }

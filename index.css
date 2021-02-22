@@ -12,10 +12,22 @@ div#quiz{
     display: flex;
     flex-direction: column;
     width: 50%;
+    --progress: 0;
 }
 
 div#quiz::before{
+    border-radius: 5px;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: cyan;
+    height: 3px;
 
+    transform: scaleX(var(--progress));
+    transform-origin: left;
+    transition: transform, 1000ms linear;
 }
 
 div#questionDiv{
