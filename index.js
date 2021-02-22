@@ -1,11 +1,15 @@
 const maxQuestions = 10
-const questionTime = 1000
+const questionTime = 10
 
 let questions
 let currentQuestion = 0
 let timerID
 let time
 let correctChoice
+
+const container = document.getElementById('container')
+const choices = document.getElementById("choices")
+const questionH1 = document.getElementById("question") 
 
 loadGame()
 
@@ -20,7 +24,6 @@ fetch('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=mul
 })
 
 function loadGame(){
-    const container = document.getElementById('container')
     container.innerHTML = `
         <div id="quiz">
             <div id="questionDiv">
@@ -31,8 +34,6 @@ function loadGame(){
 }
 
 function initListeners(){
-    const choices = document.getElementById("choices")
-    
     for(let choice of choices.children){
         if(choice.innerHTML === questions[currentQuestion].correct_answer){
             correctChoice = choice
@@ -80,8 +81,6 @@ function shuffleArray(array){
 }
 
 function showQuestion(){
-    const choices = document.getElementById("choices")
-
     for(let choice of choices.children){
         choice.classList.remove('correct')
         choice.classList.remove('wrong')
@@ -93,16 +92,16 @@ function showQuestion(){
         showEnding()
         return
     }
-    const questionH1 = document.getElementById("question") 
+    
     console.log(questions[currentQuestion].correct_answer)
     questionH1.innerHTML = questions[currentQuestion].question
+    
     for(let choice of choices.children){
         choice.innerHTML = questions[currentQuestion].choices[[...choices.children].indexOf(choice)]
     }
 }
 
 function showEnding(){
-    const container = document.getElementById('container')
     container.innerHTML = `
         <div id="quiz">
             <div id="questionDiv">
@@ -118,7 +117,6 @@ function showEnding(){
 }
 
 function startGame(){
-    const container = document.getElementById('container')
     container.innerHTML = `
         <div id="quiz">
             <div id="questionDiv">
