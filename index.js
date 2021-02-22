@@ -34,6 +34,7 @@ function loadGame(){
 }
 
 function clickChoice(choice){
+    const choices = document.getElementById("choicesDiv")
     return (e) =>{
         if(e.target.innerHTML === questions[currentQuestion].correct_answer){
             choice.classList.add('correct')
@@ -55,18 +56,28 @@ function clickChoice(choice){
 }
 
 function initListeners(){
-    const choices = document.getElementById("choices")
+    const choices = document.getElementById("choicesDiv")
     for(let choice of choices.children){
         choice.addEventListener('click',clickChoice(choice))
+    }
+}
+
+function disableButtons(disable){
+    const choices = document.getElementById("choicesDiv")
+    for(let choice of choices.children){
+        choice.disabled = disable
     }
 }
 
 function nextQuestion(){
     clearInterval(timerID)
     const quizStyle = document.getElementById('quiz').style
+    disableButtons(true)
     setTimeout(()=>{
+        quizStyle.setProperty('--transitionTime','0ms')
         quizStyle.setProperty('--progress', 0)
         progress = 0
+        disableButtons(false)
         startTimer()
         currentQuestion++
         showQuestion()
@@ -85,7 +96,7 @@ function shuffleArray(array){
 }
 
 function showQuestion(){
-    const choices = document.getElementById("choices")
+    const choices = document.getElementById("choicesDiv")
     const questionH1 = document.getElementById("question") 
 
     for(let choice of choices.children){
@@ -130,12 +141,10 @@ function startGame(){
                 <h1 id="question">Question</h1>
             </div>
             <div id="choicesDiv">
-                <ul id="choices">
-                    <li>choice 1</li>
-                    <li>choice 2</li>
-                    <li>choice 3</li>
-                    <li>choice 3</li>
-                </ul>
+                <button class="btn">choice1</button>
+                <button class="btn">choice2</button>
+                <button class="btn">choice3</button>
+                <button class="btn">choice4</button>
             </div>
         </div>
     `
@@ -151,12 +160,13 @@ function startTimer(){
     timerID = setInterval(()=>{
         if(time!==0){
             progress = progress + constantStep
+            quizStyle.setProperty('--transitionTime','1000ms')
             quizStyle.setProperty('--progress', progress )
             time--
         }
         else{
             if(currentQuestion !== maxQuestions){
-                const choices = document.getElementById("choices")
+                const choices = document.getElementById("choicesDiv")
                 for(let schoice of choices.children){
                     if(schoice.innerHTML === questions[currentQuestion].correct_answer){
                         schoice.classList.add('correct')

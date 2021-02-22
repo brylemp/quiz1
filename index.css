@@ -13,6 +13,7 @@ div#container{
 }
 
 div#quiz{
+    background-color: #ffffff;
     position: relative;
     border: solid 1px black;
     border-radius: 5px;
@@ -20,6 +21,7 @@ div#quiz{
     flex-direction: column;
     width: 50%;
     --progress: 0;
+    --transitionTime: 1000ms;
 }
 
 div#quiz::before{
@@ -29,12 +31,12 @@ div#quiz::before{
     top: 0;
     left: 0;
     right: 0;
-    background-color: green;
+    background-color: #37474f;
     height: 3px;
 
     transform: scaleX(var(--progress));
     transform-origin: left;
-    transition: transform, 1000ms linear;
+    transition: transform, var(--transitionTime) linear;
 }
 
 div#questionDiv{
@@ -50,19 +52,15 @@ div#resultDiv{
     width: 95%;
 }
 
-.hide{
-    visibility: hidden
+div#choicesDiv{
+    display: flex;
+    flex-direction: column;
 }
 
-ul{
-    padding: 0;
-    list-style-type: none;
-    text-align: center;
-}
-
-ul li{
+button.btn{
     position: relative;
     border: solid 1px black;
+    background-color:#eceff1;
     border-radius: 5px;
     margin-bottom: 1%;
     font-size: larger;
@@ -71,9 +69,24 @@ ul li{
     padding-top: 2vh;
     padding-bottom: 2vh;
     cursor: pointer;
+    transition: background-color, 100ms ease-in-out;
 }
 
-ul li::before{
+button.btn:disabled{
+    background-color: rgb(243, 243, 243);;
+    color: black
+}
+
+button.btn:active{
+    background-color:white;
+    outline:none;
+}
+
+button.btn:focus{
+    outline:none;
+}
+
+button.btn::before{
     border-radius: 5px;
     content: '';
     position: absolute;
@@ -87,13 +100,13 @@ ul li::before{
     transition: transform, 300ms ease-in-out;
 }
 
-ul li:hover::before{
+button.btn:hover::before{
     transform: scaleX(1);
 }
 
-ul li.correct{
+button.btn.correct{
     position: relative;
-    border: solid 1px rgb(0, 206, 0);
+    border: solid 1px #64dd17;
     border-radius: 5px;
     margin-bottom: 1%;
     font-size: larger;
@@ -103,22 +116,22 @@ ul li.correct{
     padding-bottom: 2vh;
 }
 
-ul li.correct::before{
+button.btn.correct::before{
     border-radius: 5px;
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: green;
+    background-color: #1faa00;
     height: 2px;
 
     transform: scaleX(1);
 }
 
-ul li.wrong{
+button.btn.wrong{
     position: relative;
-    border: solid 1px rgb(255, 0, 0);
+    border: solid 1px #d50000;
     border-radius: 5px;
     margin-bottom: 1%;
     font-size: larger;
@@ -128,14 +141,14 @@ ul li.wrong{
     padding-bottom: 2vh;
 }
 
-ul li.wrong::before{
+button.btn.wrong::before{
     border-radius: 5px;
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgb(163, 0, 0);
+    background-color: #9b0000;
     height: 2px;
 
     transform: scaleX(1);
