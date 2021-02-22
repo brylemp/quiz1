@@ -6,6 +6,7 @@ let progress = 0
 let questions
 let currentQuestion = 0
 let timerID
+let debounceID
 let time
 
 const container = document.getElementById('container')
@@ -32,28 +33,31 @@ function loadGame(){
     `
 }
 
+function clickChoice(choice){
+    return (e) =>{
+        if(e.target.innerHTML === questions[currentQuestion].correct_answer){
+            choice.classList.add('correct')
+        }
+        else{
+            for(let schoice of choices.children){
+                if(schoice.innerHTML === questions[currentQuestion].correct_answer){
+                    schoice.classList.add('correct')
+                }
+            }
+            console.log(questions[currentQuestion].correct_answer)
+            choice.classList.add('wrong')
+        }
+    
+        if(currentQuestion !== maxQuestions){
+            nextQuestion()
+        }
+    }
+}
+
 function initListeners(){
     const choices = document.getElementById("choices")
     for(let choice of choices.children){
-        choice.addEventListener('click', (e) =>{
-            if(e.target.innerHTML === questions[currentQuestion].correct_answer){
-                choice.classList.add('correct')
-            }
-            else{
-                for(let schoice of choices.children){
-                    if(schoice.innerHTML === questions[currentQuestion].correct_answer){
-                        schoice.classList.add('correct')
-                    }
-                }
-                console.log(questions[currentQuestion].correct_answer)
-                choice.classList.add('wrong')
-            }
-
-            if(currentQuestion !== maxQuestions){
-                nextQuestion()
-            }
-            
-        })
+        choice.addEventListener('click',clickChoice(choice))
     }
 }
 

@@ -1,3 +1,10 @@
+body {
+    -webkit-user-select: none;
+        -moz-user-select: -moz-none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
 div#container{
     display: flex;
     justify-content: center;
@@ -22,7 +29,7 @@ div#quiz::before{
     top: 0;
     left: 0;
     right: 0;
-    background-color: cyan;
+    background-color: green;
     height: 3px;
 
     transform: scaleX(var(--progress));
@@ -63,6 +70,7 @@ ul li{
     margin-left: 2.5%;
     padding-top: 2vh;
     padding-bottom: 2vh;
+    cursor: pointer;
 }
 
 ul li::before{
