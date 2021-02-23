@@ -47,6 +47,13 @@ div#questionDiv{
     text-align: left;
 }
 
+div#scoreDiv{
+    margin-left: 2.5%;
+    width: 95%;
+    overflow: hidden;
+    text-align: right;
+}
+
 div#resultDiv{
     margin-left: 2.5%;
     width: 95%;

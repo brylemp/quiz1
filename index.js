@@ -8,10 +8,12 @@ let currentQuestion = 0
 let timerID
 let debounceID
 let time
+let score = 0
 
 let container = document.getElementById('container')
 let quizStyle
 let choices
+let scoreH2
 
 loadGame()
 
@@ -39,6 +41,8 @@ function clickChoice(choice){
     return (e) =>{
         choice.classList.add('selected')
         if(e.target.innerHTML === questions[currentQuestion].correct_answer){
+            score++;
+            scoreH2.innerHTML = `${score}/10`
             choice.classList.add('correct')
         }
         else{
@@ -82,9 +86,9 @@ function disableButtons(disable){
 
 function nextQuestion(){
     clearInterval(timerID)
+    quizStyle.setProperty('--transitionTime','0ms')
     disableButtons(true)
     setTimeout(()=>{
-        quizStyle.setProperty('--transitionTime','0ms')
         quizStyle.setProperty('--progress', 0)
         progress = 0
         disableButtons(false)
@@ -131,6 +135,9 @@ function showEnding(){
 function startGame(){
     container.innerHTML = `
         <div id="quiz">
+            <div id="scoreDiv">
+                <h2 id="score">0/10</h2>
+            </div>
             <div id="questionDiv">
                 <h1 id="question">Question</h1>
             </div>
@@ -145,6 +152,7 @@ function startGame(){
 
     quizStyle = document.getElementById('quiz').style
     choices = document.getElementById("choicesDiv")
+    scoreH2 = document.getElementById("score")
 
     initListeners()
     startTimer()
