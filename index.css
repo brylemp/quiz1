@@ -104,53 +104,23 @@ button.btn:hover::before{
     transform: scaleX(1);
 }
 
+button.btn.selected{
+    background-color: #ffffff;
+}
+
 button.btn.correct{
-    position: relative;
     border: solid 1px #64dd17;
-    border-radius: 5px;
-    margin-bottom: 1%;
-    font-size: larger;
-    width: 95%;
-    margin-left: 2.5%;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
 }
 
 button.btn.correct::before{
-    border-radius: 5px;
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     background-color: #1faa00;
-    height: 2px;
-
-    transform: scaleX(1);
 }
 
 button.btn.wrong{
-    position: relative;
     border: solid 1px #d50000;
-    border-radius: 5px;
-    margin-bottom: 1%;
-    font-size: larger;
-    width: 95%;
-    margin-left: 2.5%;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
 }
 
 button.btn.wrong::before{
-    border-radius: 5px;
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
     background-color: #9b0000;
-    height: 2px;
-
-    transform: scaleX(1);
 }
 

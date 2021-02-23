@@ -37,6 +37,7 @@ function loadGame(){
 
 function clickChoice(choice){
     return (e) =>{
+        choice.classList.add('selected')
         if(e.target.innerHTML === questions[currentQuestion].correct_answer){
             choice.classList.add('correct')
         }
@@ -99,6 +100,7 @@ function showQuestion(){
     for(let choice of choices.children){
         choice.classList.remove('correct')
         choice.classList.remove('wrong')
+        choice.classList.remove('selected')
     }
     
     if(currentQuestion === maxQuestions){
@@ -121,11 +123,6 @@ function showEnding(){
         <div id="quiz">
             <div id="questionDiv">
                 <h1>Finished!</h1>
-            </div>
-            <div id="choicesDiv">
-                <ul id="choices">
-                    
-                </ul>
             </div>
         </div
     `
