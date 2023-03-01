@@ -20,30 +20,31 @@ div#quiz{
     display: flex;
     flex-direction: column;
     width: 50%;
-    --progress: 0;
-    --transitionTime: 1000ms;
 }
 
-div#quiz::before{
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #37474f;
-    height: 10px;
-
-    transform: scaleX(var(--progress));
-    transform-origin: left;
-    transition: transform, var(--transitionTime) linear;
+div#progressBar {
+    width: 0%;
+    height: 2rem;
+    background: #37474f;
+    transition: width 1s linear;
 }
 
 div#questionDiv{
-    /* border: solid 1px black; */
     margin-left: 2.5%;
     width: 95%;
+    height: 10rem;
     overflow: hidden;
     text-align: left;
+}
+
+div#loadingDiv{
+    width: 95%;
+    text-align: center;
+}
+
+div#endingDiv{
+    width: 95%;
+    text-align: center;
 }
 
 div#scoreDiv{
@@ -104,7 +105,7 @@ button.btn::before{
     height: 2px;
 
     transform: scaleX(0);
-    transition: transform, 300ms ease-in-out;
+    transition: transform, 150ms ease-in-out;
 }
 
 button.btn:hover::before{
@@ -116,18 +117,10 @@ button.btn.selected{
 }
 
 button.btn.correct{
-    border: solid 1px #64dd17;
-}
-
-button.btn.correct::before{
-    background-color: #1faa00;
+    background-color: #64dd17;
 }
 
 button.btn.wrong{
-    border: solid 1px #d50000;
-}
-
-button.btn.wrong::before{
-    background-color: #9b0000;
+    background-color: #d50000;
 }
 

@@ -1,187 +1,202 @@
-const maxQuestions = 10
-const questionTime = 5
-const constantStep = 1/questionTime
+function shuffleArray(array) {
+  const newArray = [];
+  const arrayLength = array.length;
+  for (let i = 0; i < arrayLength; i += 1) {
+    const rand = Math.floor(Math.random() * array.length);
+    const temp = array.splice(rand, 1);
+    newArray.push(temp[0]);
+  }
+  return newArray;
+}
 
-let progress = 0
-let questions
-let currentQuestion = 1
-let timerID
-let debounceID
-let time
-let score = 0
+// Difficulty: easy, medium, hard
 
-let container = document.getElementById('container')
-let quizStyle
-let choices
-let scoreH2
+class Quiz {
+  constructor({ maxQuestions = 10, difficulty = 'easy', seconds = 10 }) {
+    this.difficulty = difficulty;
+    this.maxQuestions = maxQuestions;
+    this.timePerQuestion = seconds * 1000; // In milliseconds
+    this.progress = 0;
+    this.questionNumber = 0;
+    this.score = 0;
+    this.container = document.getElementById('container');
+  }
 
-loadGame()
-
-fetch('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
-.then(response => response.json())
-.then(response => {
-    questions = response.results
-    for(let question of questions){
-        question.choices = shuffleArray(questions[questions.indexOf(question)].incorrect_answers.concat(questions[questions.indexOf(question)].correct_answer))
-    }
-    startGame()
-})
-
-function loadGame(){
-    container.innerHTML = `
-        <div id="quiz">
-            <div id="questionDiv">
-                <h1>Loading!</h1>
+  async startGame() {
+    this.renderLoading();
+    this.questions = await this.getQuestions();
+    this.container.innerHTML = `
+            <div id="quiz">
+                <div id="progressBar"></div>
+                <div id="scoreDiv">
+                    <h2 id="score">${this.score}/${this.questionNumber}</h2>
+                </div>
+                <div id="questionDiv">
+                    <h1 id="question">Question</h1>
+                </div>
+                <div id="choicesDiv">
+                    <button class="btn">choice1</button>
+                    <button class="btn">choice2</button>
+                    <button class="btn">choice3</button>
+                    <button class="btn">choice4</button>
+                </div>
             </div>
-        </div
-    `
-}
+        `;
 
-function clickChoice(choice){
-    return (e) =>{
-        const correctAnswer = questions[currentQuestion].correct_answer
-        const chosenAnswer = e.target.innerHTML
+    this.progressElement = document.getElementById('progressBar');
+    this.choicesElement = document.getElementById('choicesDiv');
+    this.scoreElement = document.getElementById('score');
+    this.currentQuestion = this.questions[this.questionNumber];
 
-        choice.classList.add('selected')
+    this.initChoiceListeners();
+    this.startTimer();
+    this.renderQuestion();
+  }
 
-        if(chosenAnswer === correctAnswer){
-            score++;
-            scoreH2.innerHTML = `${score}/${currentQuestion}`
-            choice.classList.add('correct')
+  async getQuestions() {
+    const url = `https://opentdb.com/api.php?amount=${this.maxQuestions}&category=9&difficulty=${this.difficulty}&type=multiple`;
+    const response = await fetch(url);
+    const res = await response.json();
+    for (const question of res.results) {
+      question.choices = shuffleArray(question.incorrect_answers.concat(question.correct_answer));
+    }
+
+    return res.results;
+  }
+
+  clickChoice(choice) {
+    return (e) => {
+      this.stopTimer();
+
+      const correctAnswer = this.currentQuestion.correct_answer;
+      const chosenAnswer = e.target.innerHTML;
+
+      choice.classList.add('selected');
+
+      if (chosenAnswer === correctAnswer) {
+        this.score += 1;
+        this.scoreElement.innerHTML = `${this.score}/${this.questionNumber}`;
+        choice.classList.add('correct');
+      } else {
+        for (const schoice of this.choicesElement.children) {
+          if (schoice.innerHTML === correctAnswer) {
+            schoice.classList.add('correct');
+          }
         }
-        else{
-            for(let schoice of choices.children){
-                if(schoice.innerHTML === correctAnswer){
-                    schoice.classList.add('correct')
-                }
-            }
-            choice.classList.add('wrong')
+        choice.classList.add('wrong');
+      }
+
+      if (this.questionNumber !== this.maxQuestions) {
+        this.nextQuestion();
+      }
+    };
+  }
+
+  initChoiceListeners() {
+    for (const choice of this.choicesElement.children) {
+      choice.addEventListener('click', this.clickChoice(choice));
+    }
+  }
+
+  disableChoices(disable) {
+    for (const choice of this.choicesElement.children) {
+      choice.disabled = disable;
+    }
+  }
+
+  resetChoices() {
+    for (const choice of this.choicesElement.children) {
+      choice.classList.remove('correct');
+      choice.classList.remove('wrong');
+      choice.classList.remove('selected');
+    }
+  }
+
+  nextQuestion() {
+    this.stopTimer();
+    setTimeout(() => {
+      this.resetChoices();
+      this.progressElement.style.width = '0%';
+      this.progress = 0;
+      this.disableChoices(false);
+      this.startTimer();
+      this.questionNumber += 1;
+      this.currentQuestion = this.questions[this.questionNumber];
+      this.scoreElement.innerHTML = `${this.score}/${this.questionNumber}`;
+      this.renderQuestion();
+    }, 1000);
+  }
+
+  renderQuestion() {
+    if (this.questionNumber === this.maxQuestions) {
+      this.stopTimer();
+      this.renderEnding();
+      return;
+    }
+
+    const questionElement = document.getElementById('question');
+    questionElement.innerHTML = this.currentQuestion.question;
+
+    for (const [i, choice] of [...this.choicesElement.children].entries()) {
+      choice.innerHTML = this.currentQuestion.choices[i];
+    }
+  }
+
+  renderLoading() {
+    this.container.innerHTML = `
+            <div id="quiz">
+                <div id="loadingDiv">
+                    <h1>Loading!</h1>
+                </div>
+            </div
+        `;
+  }
+
+  renderEnding() {
+    this.container.innerHTML = `
+            <div id="quiz">
+                <div id="endingDiv">
+                    <h1>Finished! You scored: ${this.score}/${this.questionNumber}</h1>
+                </div>
+            </div
+        `;
+  }
+
+  startTimer() {
+    const increment = (10000 / this.timePerQuestion);
+    let time = this.timePerQuestion;
+
+    this.timerID = setInterval(() => {
+      if (time === 0) {
+        for (const choice of this.choicesElement.children) {
+          if (choice.innerHTML === this.currentQuestion.correct_answer) {
+            choice.classList.add('correct');
+          }
         }
-    
-        if(currentQuestion !== maxQuestions){
-            nextQuestion()
-        }
-    }
+
+        this.nextQuestion();
+        return;
+      }
+
+      this.progressElement.style.transitionDuration = '100ms';
+      this.progress += increment;
+      this.progressElement.style.width = `${this.progress}%`;
+      time -= 100;
+    }, 100);
+  }
+
+  stopTimer() {
+    clearInterval(this.timerID);
+    this.progressElement.style.transitionDuration = '0s';
+    this.disableChoices(true);
+  }
 }
 
-function initChoiceListeners(){
-    for(let choice of choices.children){
-        choice.addEventListener('click',clickChoice(choice))
-    }
-}
+const options = {
+  maxQuestions: 5,
+  difficulty: 'medium',
+  seconds: 5,
+};
 
-function shuffleArray(array){
-    let newArray = []
-    const arrayLength = array.length
-    for(let i=0; i<arrayLength; i++){
-        const rand = Math.floor(Math.random()*array.length)
-        const temp = array.splice(rand,1)
-        newArray.push(temp[0])
-    }
-    return newArray
-}
-
-function disableButtons(disable){
-    for(let choice of choices.children){
-        choice.disabled = disable
-    }
-}
-
-function nextQuestion(){
-    clearInterval(timerID)
-    quizStyle.setProperty('--transitionTime','0ms')
-    disableButtons(true)
-    setTimeout(()=>{
-        quizStyle.setProperty('--progress', 0)
-        progress = 0
-        disableButtons(false)
-        startTimer()
-        currentQuestion++
-        scoreH2.innerHTML = `${score}/${currentQuestion}`
-        showQuestion()
-    },1000)
-}
-
-function showQuestion(){
-    const questionH1 = document.getElementById("question") 
-
-    for(let choice of choices.children){
-        choice.classList.remove('correct')
-        choice.classList.remove('wrong')
-        choice.classList.remove('selected')
-    }
-    
-    if(currentQuestion === maxQuestions){
-        clearInterval(timerID)
-        console.log("finished")
-        showEnding()
-        return
-    }
-    
-    console.log(questions[currentQuestion].correct_answer)
-    questionH1.innerHTML = questions[currentQuestion].question
-    
-    for(let choice of choices.children){
-        choice.innerHTML = questions[currentQuestion].choices[[...choices.children].indexOf(choice)]
-    }
-}
-
-function showEnding(){
-    container.innerHTML = `
-        <div id="quiz">
-            <div id="questionDiv">
-                <h1>Finished!</h1>
-            </div>
-        </div
-    `
-}
-
-function startGame(){
-    container.innerHTML = `
-        <div id="quiz">
-            <div id="scoreDiv">
-                <h2 id="score">${score}/${currentQuestion}</h2>
-            </div>
-            <div id="questionDiv">
-                <h1 id="question">Question</h1>
-            </div>
-            <div id="choicesDiv">
-                <button class="btn">choice1</button>
-                <button class="btn">choice2</button>
-                <button class="btn">choice3</button>
-                <button class="btn">choice4</button>
-            </div>
-        </div>
-    `
-
-    quizStyle = document.getElementById('quiz').style
-    choices = document.getElementById("choicesDiv")
-    scoreH2 = document.getElementById("score")
-
-    initChoiceListeners()
-    startTimer()
-    showQuestion()
-}
-
-function startTimer(){
-    time = questionTime
-    timerID = setInterval(()=>{
-        if(time!==0){
-            progress = progress + constantStep
-            quizStyle.setProperty('--transitionTime','1000ms')
-            quizStyle.setProperty('--progress', progress )
-            time--
-        }
-        else{
-            if(currentQuestion !== maxQuestions){
-                const choices = document.getElementById("choicesDiv")
-                for(let schoice of choices.children){
-                    if(schoice.innerHTML === questions[currentQuestion].correct_answer){
-                        schoice.classList.add('correct')
-                    }
-                }
-                nextQuestion()
-            }
-        }
-    },1000)
-}
+const q = new Quiz(options);
+q.startGame();
