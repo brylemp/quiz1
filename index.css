@@ -15,7 +15,7 @@ div#container{
 div#quiz{
     background-color: #ffffff;
     position: relative;
-    border: solid 1px black;
+    border: solid 3px black;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -25,14 +25,13 @@ div#quiz{
 }
 
 div#quiz::before{
-    border-radius: 5px;
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     background-color: #37474f;
-    height: 3px;
+    height: 10px;
 
     transform: scaleX(var(--progress));
     transform-origin: left;
@@ -62,6 +61,7 @@ div#resultDiv{
 div#choicesDiv{
     display: flex;
     flex-direction: column;
+    padding-bottom: 1rem;
 }
 
 button.btn{

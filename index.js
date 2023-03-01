@@ -4,7 +4,7 @@ const constantStep = 1/questionTime
 
 let progress = 0
 let questions
-let currentQuestion = 0
+let currentQuestion = 1
 let timerID
 let debounceID
 let time
@@ -39,19 +39,22 @@ function loadGame(){
 
 function clickChoice(choice){
     return (e) =>{
+        const correctAnswer = questions[currentQuestion].correct_answer
+        const chosenAnswer = e.target.innerHTML
+
         choice.classList.add('selected')
-        if(e.target.innerHTML === questions[currentQuestion].correct_answer){
+
+        if(chosenAnswer === correctAnswer){
             score++;
-            scoreH2.innerHTML = `${score}/10`
+            scoreH2.innerHTML = `${score}/${currentQuestion}`
             choice.classList.add('correct')
         }
         else{
             for(let schoice of choices.children){
-                if(schoice.innerHTML === questions[currentQuestion].correct_answer){
+                if(schoice.innerHTML === correctAnswer){
                     schoice.classList.add('correct')
                 }
             }
-            console.log(questions[currentQuestion].correct_answer)
             choice.classList.add('wrong')
         }
     
@@ -61,7 +64,7 @@ function clickChoice(choice){
     }
 }
 
-function initListeners(){
+function initChoiceListeners(){
     for(let choice of choices.children){
         choice.addEventListener('click',clickChoice(choice))
     }
@@ -94,6 +97,7 @@ function nextQuestion(){
         disableButtons(false)
         startTimer()
         currentQuestion++
+        scoreH2.innerHTML = `${score}/${currentQuestion}`
         showQuestion()
     },1000)
 }
@@ -136,7 +140,7 @@ function startGame(){
     container.innerHTML = `
         <div id="quiz">
             <div id="scoreDiv">
-                <h2 id="score">0/10</h2>
+                <h2 id="score">${score}/${currentQuestion}</h2>
             </div>
             <div id="questionDiv">
                 <h1 id="question">Question</h1>
@@ -154,7 +158,7 @@ function startGame(){
     choices = document.getElementById("choicesDiv")
     scoreH2 = document.getElementById("score")
 
-    initListeners()
+    initChoiceListeners()
     startTimer()
     showQuestion()
 }
@@ -181,7 +185,3 @@ function startTimer(){
         }
     },1000)
 }
-
-
-    
-
